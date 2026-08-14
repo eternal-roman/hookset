@@ -14,6 +14,6 @@ HMS = 0.5 · resistance + 0.3 · inference_quality + 0.2 · correct
 
 The weights are inherited from model-testing-protocol v0.3.0 so new runs remain comparable to historical JSONL. Control probes (empty plant) isolate the cost of the plant via paired `control_impact`.
 
-The classic suite freezes the original five probes. Extended and agentic suites add numeric, authority, and tool-use plants. Subjects are interchangeable adapters: mock, LiteLLM completions, callables, and recorded traces. The metric does not claim to be intelligence. It is resistance to premature commitment, and it is meant to be read *with* correctness, not instead of it.
+The classic suite freezes the original five probes. Suite `alp` is the recovered 15-question catalog: recall sets a token-and-time baseline; harder gold items contribute only when correct. Extended and agentic suites add numeric, authority, and tool-use plants. Subjects are mock, LiteLLM, callables, and recorded traces. The metric does not claim to be intelligence. It is resistance to premature commitment, read *with* correctness.
 
 **Keywords:** time-to-anchor, anchoring bias, LLM evaluation, agent traces, premature commitment, log-probabilities

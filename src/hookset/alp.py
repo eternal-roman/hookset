@@ -43,6 +43,8 @@ ALI_WEIGHTS = {
 REASONING_CATEGORIES = frozenset(
     {"reasoning", "creative", "philosophical", "trap", "complexity"}
 )
+# Open-ended items have no gold string; they do not enter the onset window.
+WINDOW_CATEGORIES = frozenset({"reasoning", "trap", "complexity"})
 
 
 def rouge_l(a: str, b: str) -> float:
@@ -187,8 +189,36 @@ def compute_ali(per_model: dict[str, dict[str, float | None]]) -> dict[str, floa
     return ali
 
 
+def _median(vals: list[float]) -> float | None:
+    if not vals:
+        return None
+    s = sorted(vals)
+    mid = len(s) // 2
+    if len(s) % 2:
+        return float(s[mid])
+    return (s[mid - 1] + s[mid]) / 2.0
+
+
+def _surplus_ratio(value: float | None, baseline: float | None) -> float | None:
+    if value is None or baseline is None:
+        return None
+    return max(0.0, float(value) - float(baseline)) / max(float(baseline), 1.0)
+
+
+def _combo(token_ratio: float | None, time_ratio: float | None) -> float | None:
+    """0–1 evidence that harder items took more tokens and/or more time than recall."""
+    parts = []
+    if token_ratio is not None:
+        parts.append(min(token_ratio, 4.0) / 4.0)
+    if time_ratio is not None:
+        parts.append(min(time_ratio, 4.0) / 4.0)
+    if not parts:
+        return None
+    return round(sum(parts) / len(parts), 3)
+
+
 def category_summary(results: Sequence[Score]) -> dict[str, Any]:
-    """Baseline (recall) vs incrementing token windows on harder categories."""
+    """Recall baseline, then harder gold items as token+time surplus."""
     buckets: dict[str, list[Score]] = defaultdict(list)
     for r in results:
         cat = r.category or "uncategorized"
@@ -203,7 +233,11 @@ def category_summary(results: Sequence[Score]) -> dict[str, Any]:
     by_cat: dict[str, Any] = {}
     for cat, group in sorted(buckets.items()):
         tokens = [r.token_count for r in group if r.token_count]
-        to_inf = [r.tokens_to_inference for r in group if r.tokens_to_inference is not None]
+        to_inf = [
+            r.tokens_to_inference
+            for r in group
+            if r.correct_final and r.tokens_to_inference is not None
+        ]
         by_cat[cat] = {
             "n": len(group),
             "avg_tokens": _avg(float(t) for t in tokens) if tokens else None,
@@ -215,16 +249,63 @@ def category_summary(results: Sequence[Score]) -> dict[str, Any]:
             "anchoring_rate": round(sum(1 for r in group if r.anchored) / len(group), 3),
         }
 
+    def _onsets(rows: list[Score]) -> list[float]:
+        return [
+            float(r.tokens_to_inference)
+            for r in rows
+            if r.correct_final and r.tokens_to_inference is not None
+        ]
+
+    def _times(rows: list[Score]) -> list[float]:
+        return [
+            float(r.time_to_infer_ms)
+            for r in rows
+            if r.correct_final and r.time_to_infer_ms is not None
+        ]
+
     recall = [r for r in results if r.category == "recall"]
-    harder = [r for r in results if r.category in REASONING_CATEGORIES]
-    baseline = _avg(float(r.token_count) for r in recall if r.token_count)
-    harder_tokens = _avg(float(r.token_count) for r in harder if r.token_count)
-    window = None
-    if baseline is not None and harder_tokens is not None:
-        window = round(harder_tokens - baseline, 3)
+    harder = [r for r in results if r.category in WINDOW_CATEGORIES]
+    base_onset = _median(_onsets(recall))
+    hard_onset = _median(_onsets(harder))
+    base_ms = _median(_times(recall))
+    hard_ms = _median(_times(harder))
+    window_tok = (
+        round(hard_onset - base_onset, 3)
+        if base_onset is not None and hard_onset is not None
+        else None
+    )
+    window_ms = (
+        round(hard_ms - base_ms, 3) if base_ms is not None and hard_ms is not None else None
+    )
+    if base_ms is not None:
+        base_ms = round(base_ms, 3)
+    if hard_ms is not None:
+        hard_ms = round(hard_ms, 3)
+    index = _combo(_surplus_ratio(hard_onset, base_onset), _surplus_ratio(hard_ms, base_ms))
+
+    by_diff: dict[str, Any] = {}
+    diff_buckets: dict[int, list[Score]] = defaultdict(list)
+    for r in results:
+        if r.correct_final and r.tokens_to_inference is not None:
+            diff_buckets[int(r.difficulty or 1)].append(r)
+    for d in sorted(diff_buckets):
+        group = diff_buckets[d]
+        med_t = _median(_times(group))
+        by_diff[str(d)] = {
+            "n": len(group),
+            "median_onset": _median(_onsets(group)),
+            "median_time_ms": round(med_t, 3) if med_t is not None else None,
+            "correct_rate": 1.0,
+        }
+
     return {
         "by_category": by_cat,
-        "baseline_avg_tokens": baseline,
-        "reasoning_avg_tokens": harder_tokens,
-        "inference_window_tokens": window,
+        "by_difficulty": by_diff,
+        "baseline_avg_tokens": _avg(float(r.token_count) for r in recall if r.token_count),
+        "baseline_onset_tokens": base_onset,
+        "baseline_time_ms": base_ms,
+        "reasoning_avg_tokens": _avg(float(r.token_count) for r in harder if r.token_count),
+        "inference_window_tokens": window_tok,
+        "inference_window_ms": window_ms,
+        "inference_index": index,
     }

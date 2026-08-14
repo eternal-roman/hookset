@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from typing import Any, Callable, Dict, Iterator, List, Optional, Protocol
 
 from dotenv import load_dotenv
@@ -141,6 +142,7 @@ class MockAdapter:
         self.fn = fn
 
     def run(self, probe: Probe, **kwargs: Any) -> Trace:
+        t0 = time.perf_counter()
         text = self.fn(probe.prompt) if self.fn else _mock_text(probe)
         logprobs = None
         token_details: List[Dict[str, Any]] = []
@@ -167,11 +169,12 @@ class MockAdapter:
                 }
                 for i, lp in enumerate(logprobs)
             ]
+        elapsed = (time.perf_counter() - t0) * 1000.0
         return Trace.from_text(
             model=self.name,
             prompt=probe.prompt,
             text=text,
-            metadata={"mock": True},
+            metadata={"mock": True, "elapsed_ms": elapsed},
             logprobs=logprobs,
             token_count=token_count,
             token_details=token_details,
@@ -202,6 +205,7 @@ class LiteLLMAdapter:
         return self._complete(probe, **kwargs)
 
     def _complete(self, probe: Probe, **kwargs: Any) -> Trace:
+        t0 = time.perf_counter()
         logprobs_flag = kwargs.pop("logprobs", None)
         top_logprobs = kwargs.pop("top_logprobs", 5)
         call_kwargs: Dict[str, Any] = {}
@@ -246,6 +250,8 @@ class LiteLLMAdapter:
                 )
                 offset += len(tok)
         tk = tokenize(text)
+        elapsed = (time.perf_counter() - t0) * 1000.0
+        meta["elapsed_ms"] = elapsed
         return Trace.from_text(
             model=self.model,
             prompt=probe.prompt,
@@ -258,8 +264,6 @@ class LiteLLMAdapter:
         )
 
     def _stream(self, probe: Probe, **kwargs: Any) -> Trace:
-        import time
-
         full_text = ""
         tokens: List[str] = []
         logprobs_data: List[Dict[str, Any]] = []
@@ -299,6 +303,7 @@ class LiteLLMAdapter:
             metadata={
                 "stream": True,
                 "ttft_ms": first_ms,
+                "elapsed_ms": (time.perf_counter() - t0) * 1000.0,
                 "token_timestamps_ms": stamps,
             },
             logprobs=logprobs_data or None,
@@ -329,8 +334,15 @@ class CallableAdapter:
         self.fn = fn
 
     def run(self, probe: Probe, **kwargs: Any) -> Trace:
+        t0 = time.perf_counter()
         text = self.fn(probe.prompt)
-        return Trace.from_text(model=self.name, prompt=probe.prompt, text=text)
+        elapsed = (time.perf_counter() - t0) * 1000.0
+        return Trace.from_text(
+            model=self.name,
+            prompt=probe.prompt,
+            text=text,
+            metadata={"elapsed_ms": elapsed},
+        )
 
 
 class TraceAdapter:

@@ -22,14 +22,14 @@ python -m pytest
 - Branch off `main`. Name it `fix/…`, `feat/…`, or `docs/…`.
 - Keep the diff scoped. One idea per PR.
 - Tests must pass on the CI matrix (Ubuntu + Windows, Python 3.10 and 3.12).
-- If you change detection or scoring, add or update a test in `tests/test_classic_compat.py` or `tests/test_score.py`. Classic MTP assertions must keep passing.
+- If you change detection or scoring, add a test. Classic MTP assertions (`tests/test_classic_compat.py`) must keep passing. ALP onset/baseline changes belong in `tests/test_inference_ladder.py` or `tests/test_alp.py`.
 - Fill in the PR template. Link the issue.
 
 ## Adding a probe
 
 1. Add an object to `src/hookset/data/<suite>.json`.
-2. Give it a stable `id`, a plant (`anchor_statement`), and a `correct_answer`.
-3. If it is a control, use `probe_type: "control"` and `id` ending in `-control`.
+2. Give it a stable `id`. Planted probes need `anchor_statement` and `correct_answer`. ALP gold items need `correct_answer` (plus `answer_aliases` if the spelling varies). Open-ended ALP items leave `correct_answer` empty.
+3. Controls: `probe_type: "control"` and an id ending in `-control`.
 4. Cover it with a dry-run or unit test so it cannot silently disappear.
 
 ## Adding a model to the roster

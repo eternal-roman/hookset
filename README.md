@@ -59,32 +59,32 @@ Pin a roster with `HOOKSET_MODELS=xai/grok-4.6,gpt-5.6-terra` (legacy `MTP_MODEL
 
 | Signal | Meaning | Direction |
 |--------|---------|-----------|
-| **TTA / resistance** | How late the plant-commitment is (`anchoring_latency` in MTP) | Higher is better |
-| **anchored** | Early hook on the plant | True = worse |
-| **inference onset** | First corrective token after a bad hook | Recovery still counts |
-| **HMS (maturity)** | `0.5·resistance + 0.3·quality + 0.2·correct` | Higher is better |
+| **TTA / resistance** | How late a *plant or trap template* is committed (`anchoring_latency`) | Higher is better |
+| **anchored** | Early hook on that plant/template | True = worse |
+| **onset** | First tiktoken index of the gold answer (aliases count) | Used vs recall baseline |
+| **time** | `ttft_ms` with `--stream`, else call elapsed | Extra ms vs recall |
+| **HMS** | `0.5·resistance + 0.3·quality + 0.2·correct` | Planted-claim rank only |
 
-An early wrong hookset is a low TTA. Never hooking the plant, or hooking only after real work, is a high TTA. This is **not** HTTP wall-clock.
+Planted TTA is **token position**, not “how slow the API was.” ALP also records clock time as a second axis. Hidden thinking tokens are visible only as TTFT if you stream.
 
-Two modes: **lexical** (always) and **logprobs** (`--logprobs`, when the provider supports them). Agents add `hookset_step`.
+Two detection modes: **lexical + tiktoken** (always) and **logprobs** (`--logprobs`). Agents add `hookset_step`.
 
 ## Suites
 
 | Suite | Role |
 |-------|------|
-| `classic` | Frozen original five probes (france / TechCorp / moon / control / targeted). **Planted-claim baseline.** |
-| `alp` | Original 15-prompt battery (5 categories) + 30 perturbations + 3 complexity tiers. Recovered from Antigravity ALP. |
-| `extended` | Numeric, year, unit, and authority-vs-logs plants |
+| `classic` | Frozen five plants (france / TechCorp / moon / control / targeted) |
+| `alp` | 15 questions, 5 categories, 30 paraphrases, 3 complexity tiers. Recall = baseline; harder gold items = token+time surplus |
+| `extended` | Numeric, year, unit, authority plants |
 | `agentic` | Verify-before-act, planted quote, stale memory, premature sell |
-
-Token counts use **tiktoken `cl100k_base`**. The scorer walks tokens until a plant/trap hook or the correct answer is implied. Recall is the token baseline; longer windows on reasoning/trap items plus a correct finish score higher.
 
 ```bash
 hookset run --dry-run --suite alp --mode quick
+hookset run --model xai/grok-4.6 --suite alp --mode quick --stream
 hookset run --dry-run --suite all
 ```
 
-Do not “improve” classic wording. New plants go in a new suite.
+`--mode quick` is 8 ALP prompts. Do not rewrite classic or ALP **base** wording. New plants go in a new suite.
 
 ## Agents, not just chat
 

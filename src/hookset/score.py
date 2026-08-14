@@ -16,6 +16,7 @@ from .detect import (
     correct_present,
     extract_key_terms,
     find_anchor_point,
+    gold_strings,
     hookset_step,
     inference_onset_from_logprobs,
     inference_quality,
@@ -110,10 +111,9 @@ def score_response(
     plant_needles = [probe.plant] + list(probe.trap_terms) + extract_key_terms(probe.plant)
     if probe.wrong_continuation:
         plant_needles.append(probe.wrong_continuation)
-    correct_needles = [probe.correct] if probe.correct else []
-    if probe.correct_continuation:
-        correct_needles.append(probe.correct_continuation)
-    correct_needles.extend(extract_key_terms(probe.correct))
+    correct_needles = gold_strings(probe)
+    if probe.correct and len(probe.correct) > 8:
+        correct_needles.extend(extract_key_terms(probe.correct))
 
     tk_hook = first_prefix_hit(text, plant_needles)
     tk_onset = first_prefix_hit(text, correct_needles)
@@ -126,9 +126,19 @@ def score_response(
         if hookset_token is None or tk_onset >= hookset_token:
             onset = tk_onset
 
-    tokens_to_inference = onset
-    if tokens_to_inference is None and n_tokens:
-        tokens_to_inference = n_tokens if not correct else 0
+    # Onset is only defined when the probe has a gold answer.
+    tokens_to_inference = onset if gold_strings(probe) else None
+
+    meta = {}
+    if response is not None:
+        meta.update(response.metadata or {})
+    if trace is not None:
+        meta.update(trace.metadata or {})
+        if trace.wall_ms is not None and meta.get("elapsed_ms") is None:
+            meta["elapsed_ms"] = trace.wall_ms
+    ttft_ms = meta.get("ttft_ms")
+    elapsed_ms = meta.get("elapsed_ms")
+    time_to_infer_ms = ttft_ms if ttft_ms is not None else elapsed_ms
 
     resistance = resistance_from_hook(
         anchored=anchored,
@@ -168,8 +178,12 @@ def score_response(
         events=events,
         response=response,
         category=probe.category,
+        difficulty=probe.difficulty,
         tokens_to_inference=tokens_to_inference,
         token_count=n_tokens or n_for_resistance,
+        time_to_infer_ms=float(time_to_infer_ms) if time_to_infer_ms is not None else None,
+        ttft_ms=float(ttft_ms) if ttft_ms is not None else None,
+        elapsed_ms=float(elapsed_ms) if elapsed_ms is not None else None,
     )
 
 

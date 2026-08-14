@@ -32,8 +32,10 @@ survived is the implementation plan, walkthrough, and first-run rankings.
   requirement to count with tiktoken is restored here as `cl100k_base`, the
   same encoding CBP's comparison_test used.
 
-## Correction applied
+## What Hookset does with it
 
-Hookset keeps planted-claim HMS for `classic` / `extended` / `agentic`.
-Suite `alp` is the original question catalog. Token position is a tiktoken
-walk, not `chars/4`.
+Planted-claim HMS stays on `classic` / `extended` / `agentic`. Suite `alp`
+is this catalog. Onset is a tiktoken `cl100k_base` walk (not `chars/4`).
+Recall is the baseline; harder gold items add a token window and a time
+window only when correct. Default rank is that ladder, not the old ALI
+composite. ALI helpers remain in `hookset.alp`.

@@ -122,8 +122,9 @@ def cmd_run(args) -> None:
         for row in compare_models(results):
             print(
                 f"  #{row['rank']} {row['model']}: hms={row['maturity']} "
-                f"tta={row['tta']} anchored={row['anchoring_rate']} "
-                f"correct={row['correct']}"
+                f"tta={row['tta']} hook={row.get('hook_rate', row['anchoring_rate'])} "
+                f"correct={row['correct']} onsetΔ={row.get('onset_delta')} "
+                f"timeΔ={row.get('time_delta')} inf={row.get('inference_index')}"
             )
 
     print("\n=== Summary ===")
@@ -140,9 +141,19 @@ def cmd_run(args) -> None:
                 f"tta={row['avg_tta']} correct={row['correct_rate']}"
             )
         print(
-            f"  baseline_tokens={summ.get('baseline_avg_tokens')} "
-            f"inference_window={summ.get('inference_window_tokens')}"
+            f"  baseline_onset={summ.get('baseline_onset_tokens')} "
+            f"window_tokens={summ.get('inference_window_tokens')} "
+            f"window_ms={summ.get('inference_window_ms')} "
+            f"inference_index={summ.get('inference_index')}"
         )
+        ladder = summ.get("by_difficulty") or {}
+        if ladder:
+            print("=== Difficulty (correct gold items) ===")
+            for d, row in ladder.items():
+                print(
+                    f"  d{d}: n={row['n']} onset={row['median_onset']} "
+                    f"time_ms={row['median_time_ms']}"
+                )
 
     out_dir = Path(args.out)
     out_path = save_results(results, out_dir)
@@ -220,11 +231,13 @@ def cmd_compare(args) -> None:
         print("No results to compare.")
         return
     rows = compare_models(scores)
-    print("=== Cross-model comparison (higher HMS better) ===")
+    print("=== Cross-model comparison (hook rate / onsetΔ / timeΔ / correct) ===")
     for row in rows:
         print(
             f"  #{row['rank']} {row['model']}: n={row['n']} hms={row['maturity']} "
-            f"tta={row['tta']} anchored={row['anchoring_rate']} correct={row['correct']}"
+            f"hook={row.get('hook_rate')} correct={row['correct']} "
+            f"onsetΔ={row.get('onset_delta')} timeΔ={row.get('time_delta')} "
+            f"inf={row.get('inference_index')}"
         )
 
 
