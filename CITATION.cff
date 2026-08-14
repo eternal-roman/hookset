@@ -8,14 +8,14 @@ authors:
 repository-code: https://github.com/eternal-roman/hookset
 url: https://github.com/eternal-roman/hookset
 abstract: >-
-  Hookset measures time-to-anchor (TTA), the normalized
-  position of first commitment to a planted early claim,
-  as a maturity metric for language models and tool-using
-  agents. Longer TTA indicates more inference before
-  commitment. Scoring is deterministic (lexical, optional
-  log-probabilities, agent-step traces) and comparable to
-  the predecessor model-testing-protocol via shared
-  maturity weights.
+  Hookset measures time-to-anchor (TTA), the position of
+  first commitment to a planted claim or trap template,
+  plus an ALP catalog whose recall items set a token-and-time
+  baseline for harder gold questions. Longer resistance to a
+  bad hook, and extra onset versus recall when correct, are
+  scored deterministically (lexical, tiktoken, optional
+  log-probabilities, agent-step traces). HMS weights match
+  the predecessor model-testing-protocol.
 keywords:
   - time-to-anchor
   - anchoring bias

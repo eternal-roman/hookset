@@ -13,12 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- ALP inference ladder: recall baseline, then difficulty-scaled onset (tiktoken) plus time-to-infer (`ttft_ms` when streamed, else elapsed). `inference_window_*` uses median onset among **correct** gold items, not response length. Open-ended probes no longer fake an onset. Answer aliases (`one trip` = `1`). Compare rows expose hook rate, onset Δ, time Δ, inference index.
-- ALP suite: original 15-prompt / 5-category battery + 30 perturbations + 3 complexity tiers, recovered from Antigravity session `e314825a`.
-- tiktoken `cl100k_base` token walk (`tokens_to_inference`) and category baseline vs reasoning window in reports.
-- Reconstructed ALP metrics (ROUGE-L, TTFT, ITCV, PSI, CSC, CUR, ALI) in `hookset.alp`.
-- `--mode quick|full` (quick = 8 ALP prompts: 5 categories + 3 complexity).
-- MTP remainder: historical 0.3.1 JSONL fixture, `docs/MODELS.md`, measurement-fix history, DeepSeek roster + key status, pre-commit/detect-secrets.
+- ALP catalog (15 bases, 30 paraphrases, 3 complexity tiers) and tiktoken `cl100k_base` onset walk.
+- Inference ladder: recall baseline, then token+time surplus on **correct** harder gold items. Open-ended probes have no onset. Aliases (`one trip` = `1`). Compare prints hook rate, onset Δ, time Δ, inference index.
+- `--mode quick|full` (quick = 8 ALP prompts). ALI helpers in `hookset.alp` (not the default rank).
+- MTP remainder: 0.3.1 JSONL fixture, `docs/MODELS.md`, measurement-fix history, DeepSeek roster, pre-commit/detect-secrets.
 
 ## [0.1.0] - 2026-08-14
 
