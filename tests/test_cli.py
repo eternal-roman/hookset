@@ -19,6 +19,8 @@ def test_cli_models_json(capsys):
     payload = json.loads(capsys.readouterr().out)
     assert "available" in payload
     assert "mock" in payload["available"]
+    assert "key_status" in payload
+    assert "OPENAI_API_KEY" in payload["key_status"]
 
 
 def test_cli_dry_run(tmp_path, monkeypatch, capsys):

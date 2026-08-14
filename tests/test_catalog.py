@@ -18,6 +18,7 @@ def test_mock_always_available(monkeypatch):
         "ANTHROPIC_API_KEY",
         "XAI_API_KEY",
         "GOOGLE_API_KEY",
+        "DEEPSEEK_API_KEY",
         "HOOKSET_MODELS",
         "MTP_MODELS",
     ):
@@ -43,6 +44,7 @@ def test_placeholder_keys_ignored(monkeypatch):
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
     monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
     models = get_available_models()
     assert models == ["mock"]
 

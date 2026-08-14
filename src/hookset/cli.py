@@ -8,7 +8,13 @@ import sys
 from pathlib import Path
 from typing import List, Optional
 
-from .catalog import get_available_models, get_default_model, load_roster, supports_logprobs
+from .catalog import (
+    get_available_models,
+    get_default_model,
+    key_status,
+    load_roster,
+    supports_logprobs,
+)
 from .compare import compare_models
 from .persist import load_results, save_report, save_results
 from .probes import SUITES, load_probes
@@ -145,19 +151,25 @@ def cmd_probes(args) -> None:
 def cmd_models(args) -> None:
     roster = load_roster()
     available = set(get_available_models())
+    keys = key_status()
     if args.json:
         payload = {
             "available": get_available_models(),
             "default": get_default_model(),
             "roster": [s.model_dump() for s in roster],
+            "key_status": keys,
         }
         print(json.dumps(payload, indent=2))
         return
     print(f"Default: {get_default_model()}")
     print("Reachable now:")
     for m in get_available_models():
+        marker = " (default)" if m == get_default_model() else ""
         lp = "logprobs" if supports_logprobs(m) else "lexical"
-        print(f"  - {m}  [{lp}]")
+        print(f"  - {m}  [{lp}]{marker}")
+    print("\nProvider keys:")
+    for name, status in keys.items():
+        print(f"  {name}: {status}")
     print("\nRoster (packaged):")
     for spec in roster:
         mark = "*" if spec.litellm in available or spec.id in available else " "

@@ -20,6 +20,14 @@ from .models import ModelSpec
 load_dotenv()
 
 _PLACEHOLDERS = ("sk-or-...", "sk-...", "sk-ant-...", "xai-...")
+_KNOWN_KEYS = (
+    "OPENROUTER_API_KEY",
+    "OPENAI_API_KEY",
+    "ANTHROPIC_API_KEY",
+    "XAI_API_KEY",
+    "GOOGLE_API_KEY",
+    "DEEPSEEK_API_KEY",
+)
 
 
 def _key_present(name: str) -> bool:
@@ -41,6 +49,8 @@ def _provider_for(litellm_id: str) -> str:
         return "google"
     if lid.startswith("gpt") or lid.startswith("openai/"):
         return "openai"
+    if lid.startswith("deepseek"):
+        return "deepseek"
     return "other"
 
 
@@ -69,6 +79,8 @@ def _reachable(spec: ModelSpec) -> bool:
         return _key_present("XAI_API_KEY") or _key_present("OPENROUTER_API_KEY")
     if p == "google":
         return _key_present("GOOGLE_API_KEY") or _key_present("OPENROUTER_API_KEY")
+    if p == "deepseek":
+        return _key_present("DEEPSEEK_API_KEY") or _key_present("OPENROUTER_API_KEY")
     return False
 
 
@@ -130,6 +142,13 @@ def get_default_model() -> str:
         if m != "mock":
             return m
     return "mock"
+
+
+def key_status() -> dict[str, str]:
+    """Whether known provider keys are real (never prints values)."""
+    return {
+        k: ("set" if _key_present(k) else "placeholder / not set") for k in _KNOWN_KEYS
+    }
 
 
 def spec_for(model: str) -> Optional[ModelSpec]:
