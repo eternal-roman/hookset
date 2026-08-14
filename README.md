@@ -47,13 +47,13 @@ copy .env.example .env           # Windows; or cp .env.example .env
 # put at least one provider key in .env
 
 hookset models                   # what your keys can actually call
-hookset run --model xai/grok-4 --logprobs --suite classic
-hookset run --models xai/grok-4,gpt-5.4-mini,claude-sonnet-4-6 --suite classic
+hookset run --model xai/grok-4.6 --suite classic
+hookset run --models xai/grok-4.6,gpt-5.6-terra,claude-sonnet-5 --suite classic
 hookset run --all-models --suite all --logprobs
 hookset compare --dir results
 ```
 
-Pin a roster with `HOOKSET_MODELS=xai/grok-4,gpt-5.4-mini` (legacy `MTP_MODELS` still works).
+Pin a roster with `HOOKSET_MODELS=xai/grok-4.6,gpt-5.6-terra` (legacy `MTP_MODELS` still works). Grok 4.20+ and Claude do not return logprobs — lexical TTA still runs.
 
 ## What gets measured
 

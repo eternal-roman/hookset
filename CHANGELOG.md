@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Model profile updated to August 2026 provider ids: `xai/grok-4.6`, `gpt-5.6-terra` / `luna` / `sol`, `claude-sonnet-5` / `claude-opus-5`, `gemini/gemini-3.7-flash`, `deepseek/deepseek-v4-flash`. OpenRouter xAI slug is `x-ai`. Grok 4.20+ marked `logprobs: false` (xAI ignores the fields). Retired ids (`xai/grok-4`, `gpt-5.4-mini`, `claude-sonnet-4-6` as default, `gemini-2.5-flash`, `deepseek-chat`) dropped from the packaged roster.
+
 ### Added
 
 - MTP remainder: historical 0.3.1 JSONL fixture, `docs/MODELS.md`, measurement-fix history, DeepSeek roster + key status, pre-commit/detect-secrets.
