@@ -1,0 +1,30 @@
+name: release
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          notes=$(python - <<'PY'
+          from pathlib import Path
+          import os, re
+          tag = os.environ["GITHUB_REF_NAME"].lstrip("v")
+          text = Path("CHANGELOG.md").read_text(encoding="utf-8")
+          pat = rf"## \[{re.escape(tag)}\][^\n]*\n(.*?)(?=\n## |\Z)"
+          m = re.search(pat, text, flags=re.S)
+          print(m.group(1).strip() if m else f"Hookset {os.environ['GITHUB_REF_NAME']}")
+          PY
+          )
+          gh release create "$tag" --title "$tag" --notes "$notes"

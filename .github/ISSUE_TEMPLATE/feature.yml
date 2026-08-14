@@ -1,0 +1,26 @@
+name: Feature
+description: A CLI, adapter, or reporting change that is not a new probe
+title: "feat: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+    validations:
+      required: true
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Constraints you accept
+      options:
+        - label: Scoring stays deterministic (no default LLM-as-judge)
+          required: true
+        - label: Classic probes stay frozen
+          required: true
