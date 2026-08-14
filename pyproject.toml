@@ -1,0 +1,58 @@
+[project]
+name = "hookset"
+version = "0.1.0"
+description = "Time-to-anchor benchmark: how long a model or agent thinks before it sets the hook."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "eternal-roman" }]
+keywords = ["llm", "eval", "anchoring", "benchmark", "agents", "time-to-anchor"]
+dependencies = [
+    "litellm>=1.40",
+    "pydantic>=2.0",
+    "python-dotenv>=1.0",
+    "pyyaml>=6.0",
+    "tenacity>=8.0",
+    "httpx>=0.27",
+    "rich>=13.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.4",
+    "mypy>=1.10",
+]
+
+[project.scripts]
+hookset = "hookset.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/eternal-roman/hookset"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+hookset = ["data/*.json", "data/*.yaml"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.mypy]
+python_version = "3.10"
+warn_unused_configs = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-q"
