@@ -1,0 +1,30 @@
+name: Bug
+description: Something scored wrong, crashed, or disagreed with MTP
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Classic probe wording is frozen. If a score looks wrong, include the probe id and the response text.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: Expected vs actual.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: Command or snippet. Prefer `hookset run --dry-run` if it reproduces.
+      render: bash
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      placeholder: "0.1.0 or commit SHA"
+    validations:
+      required: true

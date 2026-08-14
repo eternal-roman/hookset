@@ -1,0 +1,32 @@
+name: New probe
+description: Propose a plant for extended or a new suite (not classic)
+title: "probe: "
+labels: ["probe"]
+body:
+  - type: markdown
+    attributes:
+      value: Do not propose rewrites of the classic suite. Those five probes are the comparison baseline.
+  - type: dropdown
+    id: suite
+    attributes:
+      label: Target suite
+      options:
+        - extended
+        - agentic
+        - new suite (describe below)
+    validations:
+      required: true
+  - type: textarea
+    id: plant
+    attributes:
+      label: Plant, question, and correct conclusion
+      description: The early claim, the prompt, and what a mature subject should conclude.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why this is a distinct hookset
+      description: What existing probes do not already cover.
+    validations:
+      required: true

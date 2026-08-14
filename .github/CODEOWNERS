@@ -1,0 +1,6 @@
+# Default review owner
+* @eternal-roman
+
+/src/hookset/detect.py @eternal-roman
+/src/hookset/score.py @eternal-roman
+/src/hookset/data/classic.json @eternal-roman

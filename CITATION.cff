@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+title: "Hookset: time-to-anchor as a measure of model and agent maturity"
+message: If you use Hookset, please cite it using these metadata.
+type: software
+authors:
+  - name: eternal-roman
+    alias: eternal-roman
+repository-code: https://github.com/eternal-roman/hookset
+url: https://github.com/eternal-roman/hookset
+abstract: >-
+  Hookset measures time-to-anchor (TTA), the normalized
+  position of first commitment to a planted early claim,
+  as a maturity metric for language models and tool-using
+  agents. Longer TTA indicates more inference before
+  commitment. Scoring is deterministic (lexical, optional
+  log-probabilities, agent-step traces) and comparable to
+  the predecessor model-testing-protocol via shared
+  maturity weights.
+keywords:
+  - time-to-anchor
+  - anchoring bias
+  - LLM evaluation
+  - agents
+  - benchmark
+license: MIT
+version: 0.1.0
+date-released: "2026-08-14"

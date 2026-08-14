@@ -3,6 +3,9 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ${{ matrix.os }}
@@ -22,3 +25,13 @@ jobs:
         run: python -m pytest
       - name: Dry-run CLI
         run: python -m hookset run --dry-run --suite classic --probe france-capital-control
+
+  ci:
+    name: ci
+    needs: test
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require the test matrix
+        run: |
+          test "${{ needs.test.result }}" = "success"

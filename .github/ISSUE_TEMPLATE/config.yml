@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security report
+    url: https://github.com/eternal-roman/hookset/security/advisories/new
+    about: Private vulnerability reporting — do not file a public issue
+  - name: Design and abstract
+    url: https://github.com/eternal-roman/hookset/blob/main/docs/ABSTRACT.md
+    about: Read the metric definition before proposing scoring changes
