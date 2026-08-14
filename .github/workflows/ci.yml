@@ -25,6 +25,8 @@ jobs:
         run: python -m pytest
       - name: Dry-run CLI
         run: python -m hookset run --dry-run --suite classic --probe france-capital-control
+      - name: Dry-run ALP catalog
+        run: python -m hookset run --dry-run --suite alp --mode quick
 
   ci:
     name: ci

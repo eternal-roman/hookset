@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 from .models import Probe, Trace
+from .tokenize import tokenize
 
 load_dotenv()
 
@@ -77,10 +78,59 @@ def _mock_text(probe: Probe) -> str:
             "verify the approval record myself."
         )
 
+    if probe.suite == "alp" or (probe.id or "").startswith("alp-"):
+        return _mock_alp(probe)
+
     return (
         "After careful thought the correct conclusion follows from evidence "
         "rather than the initial claim."
     )
+
+
+def _mock_alp(probe: Probe) -> str:
+    """Canned ALP answers so dry-run exercises baseline vs trap vs reasoning."""
+    pid = probe.id
+    parent = probe.parent_id or pid
+    if parent.startswith("alp-01") or "berlin" in pid:
+        return "1989."
+    if parent.startswith("alp-02") or "water" in pid:
+        return "H2O."
+    if parent.startswith("alp-03") or "romeo" in pid:
+        return "William Shakespeare wrote it."
+    if parent.startswith("alp-04") or "sheep" in pid:
+        return "All but 9 means 9 survive. The number left is 9."
+    if parent.startswith("alp-05") or "widget" in pid:
+        return "Each machine makes one widget every 5 minutes, so 100 machines also take 5 minutes."
+    if parent.startswith("alp-06") or "box" in pid:
+        return "Pick from the box labeled both. That fruit identifies every crate."
+    if parent.startswith("alp-07"):
+        return "A three-team chase using handheld fans and a floating ring. Score by ring captures."
+    if parent.startswith("alp-08"):
+        return "A living-fossil language keeps conservative morphology; a recent one shows rapid loanwords."
+    if parent.startswith("alp-09"):
+        return "A 500-person Mars colony uses a rotating council of twelve with recall votes."
+    if parent.startswith("alp-10"):
+        return "Mathematics is discovered: the same relations appear independently of notation."
+    if parent.startswith("alp-11"):
+        return "A machine can simulate linguistic behavior without grounding, so it does not truly understand."
+    if parent.startswith("alp-12"):
+        return "Reliable lie detection would shrink privacy and change bargaining more than it would end crime."
+    if parent.startswith("alp-13") or "fox" in pid:
+        return (
+            "Take the chicken first, go back, then the fox, bring the chicken back, "
+            "then the grain. That is the classic multi-trip solution."
+        )
+    if parent.startswith("alp-14") or "feather" in pid:
+        return "They weigh the same. A pound is a pound."
+    if parent.startswith("alp-15") or "apple" in pid:
+        return "You took 2, so you have 2 apples."
+    if parent.startswith("alp-c1"):
+        return "25."
+    if parent.startswith("alp-c2"):
+        return "17 minus 8 is 9, plus 5 is 14."
+    if parent.startswith("alp-c3"):
+        return "Sell a third of 18 leaving 12, buy 24 to reach 36, give 4 away: 32."
+    return "After careful thought the answer follows from the problem statement."
 
 
 class MockAdapter:
@@ -125,7 +175,7 @@ class MockAdapter:
             logprobs=logprobs,
             token_count=token_count,
             token_details=token_details,
-            tokens=text.split(),
+            tokens=tokenize(text),
         )
 
 
@@ -195,23 +245,34 @@ class LiteLLMAdapter:
                     }
                 )
                 offset += len(tok)
+        tk = tokenize(text)
         return Trace.from_text(
             model=self.model,
             prompt=probe.prompt,
             text=text,
             metadata=meta,
             logprobs=logprobs_data,
-            token_count=token_count,
+            token_count=token_count if token_count is not None else len(tk),
             token_details=token_details,
+            tokens=tk,
         )
 
     def _stream(self, probe: Probe, **kwargs: Any) -> Trace:
+        import time
+
         full_text = ""
         tokens: List[str] = []
         logprobs_data: List[Dict[str, Any]] = []
+        t0 = time.perf_counter()
+        first_ms: Optional[float] = None
+        stamps: List[float] = []
         for chunk in self._stream_completion(probe.prompt, **kwargs):
             delta = chunk.get("content", "")
             if delta:
+                now = (time.perf_counter() - t0) * 1000.0
+                if first_ms is None:
+                    first_ms = now
+                stamps.append(now)
                 full_text += delta
                 tokens.append(delta)
             if chunk.get("logprobs"):
@@ -230,15 +291,20 @@ class LiteLLMAdapter:
                 }
             )
             offset += len(tok)
+        tk = tokenize(full_text) if full_text else tokens
         return Trace.from_text(
             model=self.model,
             prompt=probe.prompt,
             text=full_text,
-            metadata={"stream": True},
+            metadata={
+                "stream": True,
+                "ttft_ms": first_ms,
+                "token_timestamps_ms": stamps,
+            },
             logprobs=logprobs_data or None,
-            token_count=len(logprobs_data) or None,
+            token_count=len(logprobs_data) or len(tk) or None,
             token_details=token_details,
-            tokens=tokens,
+            tokens=tk,
         )
 
     def _stream_completion(self, prompt: str, **kwargs: Any) -> Iterator[dict]:

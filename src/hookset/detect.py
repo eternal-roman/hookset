@@ -6,6 +6,7 @@ so classic probes score the same way they did in the parked repo.
 
 from __future__ import annotations
 
+import re
 from typing import Any, Dict, List, Optional
 
 from .models import Probe, Step, Trace
@@ -228,7 +229,11 @@ def inference_quality(text: str, probe: Probe) -> float:
 def correct_present(text: str, probe: Probe) -> bool:
     if not probe.correct:
         return False
-    return probe.correct.lower()[:30] in (text or "").lower()
+    tl = (text or "").lower()
+    needle = probe.correct.lower()
+    if len(needle) <= 3:
+        return re.search(r"(?<!\w)" + re.escape(needle) + r"(?!\w)", tl) is not None
+    return needle[:30] in tl
 
 
 def scan_trace_for_hook(probe: Probe, trace: Trace) -> Optional[int]:

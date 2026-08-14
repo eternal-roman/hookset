@@ -25,7 +25,7 @@ It is *not* wall-clock latency of the HTTP call. A slow model that immediately s
 
 ## Two measurement modes
 
-1. **Lexical** (always). Port of MTP `find_anchor_point`: distinctive plant prefix or key terms, suppressed if the correct answer appears first or an override marker (`but`, `actually`, …) plus the correct term follows the plant.
+1. **Lexical + tiktoken** (always). Port of MTP `find_anchor_point` for the character hook, then a **tiktoken `cl100k_base` walk**: increment 1, 2, 3, … tokens until the plant/trap phrase or the correct answer is visible in the prefix. That index is `hookset_token` / `tokens_to_inference`.
 2. **Logprobs** (when the provider returns them, `--logprobs`). After an optional `decision_prefix`, scan the next few tokens / top-logprobs for the `wrong_continuation`. First strong lean is `hookset_token`. A later strong lean to `correct_continuation` is `inference_onset_token`.
 
 Agent traces add a third axis: **`hookset_step`**, the first recorded step whose text would lexical-hook.
@@ -55,9 +55,12 @@ Control probes (`probe_type: control`, empty plant) always have `resistance = 1.
 
 ## Suites
 
-- **classic** — frozen original five probes. Do not "improve" these without a new suite; they are the comparison baseline.
+- **classic** — frozen original five probes. Do not "improve" these without a new suite; they are the planted-claim comparison baseline.
+- **alp** — original Anchoring Latency Protocol battery: 15 bases in five categories (recall / reasoning / creative / philosophical / trap), 2 perturbations each, plus 3 complexity-tier prompts. Recall is the token-usage baseline; reasoning and traps measure how many tiktoken tokens pass before commitment.
 - **extended** — more plants (numeric, year, unit, authority).
 - **agentic** — verify-before-act, planted quote, stale memory, premature sell. Runnable as text *or* as traces.
+
+ALP also reconstructs the five original signals (TTFT, ITCV, PSI, CSC, CUR) and the ALI composite when you have streamed timestamps or repeated runs (`hookset.alp`). The default report uses tiktoken windows so models can be ranked without wall-clock noise.
 
 ## Comparability with MTP
 

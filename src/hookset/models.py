@@ -40,6 +40,11 @@ class Probe(BaseModel):
     )
     description: str = ""
     suite: str = "classic"
+    category: str = ""
+    difficulty: int = 1
+    role: str = "base"
+    parent_id: Optional[str] = None
+    trap_terms: List[str] = Field(default_factory=list)
     probe_type: ProbeType = "free-response"
     control_prompt: Optional[str] = None
     decision_prefix: Optional[str] = None
@@ -173,6 +178,9 @@ class Score(BaseModel):
     notes: str = ""
     response: Optional[ModelResponse] = None
     control_impact: Optional[Dict[str, float]] = None
+    category: str = ""
+    tokens_to_inference: Optional[int] = None
+    token_count: Optional[int] = None
 
     # MTP field aliases so old rank/report pipelines keep working.
     @property
@@ -216,6 +224,9 @@ class Score(BaseModel):
         payload["commitment_token_index"] = self.hookset_token
         payload["inference_onset_token_index"] = self.inference_onset_token
         payload["score"] = self.maturity
+        payload["category"] = self.category
+        payload["tokens_to_inference"] = self.tokens_to_inference
+        payload["token_count"] = self.token_count
         return payload
 
 

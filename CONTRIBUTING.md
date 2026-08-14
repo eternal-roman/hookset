@@ -5,7 +5,7 @@ Thanks for looking at Hookset. Small, testable changes are the ones that land.
 ## Before you write code
 
 1. Open an issue (bug, probe, or design) unless the change is a one-line typo.
-2. Do **not** rewrite the `classic` suite wording. Those probes are the comparison baseline. New plants go in `extended` or a new suite JSON.
+2. Do **not** rewrite the `classic` suite wording. Those probes are the planted-claim comparison baseline. Do **not** rewrite `alp` base prompt wording either — that battery is the recovered ALP catalog. New plants go in `extended` or a new suite JSON.
 3. Scoring must stay **deterministic**. No LLM-as-judge in the default path.
 
 ## Dev setup

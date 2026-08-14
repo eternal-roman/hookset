@@ -79,6 +79,9 @@ def _score_from_record(data: Dict[str, Any]) -> Score:
         notes=data.get("notes") or "",
         response=resp,
         control_impact=data.get("control_impact"),
+        category=data.get("category") or "",
+        tokens_to_inference=data.get("tokens_to_inference"),
+        token_count=data.get("token_count"),
     )
 
 

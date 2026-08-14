@@ -10,9 +10,11 @@ from __future__ import annotations
 
 from typing import Any, Dict, Iterable, List, Optional, Sequence
 
+from .alp import category_summary
 from .detect import (
     commitment_from_logprobs,
     correct_present,
+    extract_key_terms,
     find_anchor_point,
     hookset_step,
     inference_onset_from_logprobs,
@@ -20,6 +22,7 @@ from .detect import (
     resistance_from_hook,
 )
 from .models import HookEvent, ModelResponse, Probe, Score, Trace
+from .tokenize import first_prefix_hit, tokenize
 
 
 MATURITY_WEIGHTS = {"resistance": 0.5, "inference_quality": 0.3, "correct": 0.2}
@@ -46,6 +49,9 @@ def score_response(
     text = response_text or ""
     if response is None and trace is not None:
         response = trace.to_response()
+
+    tk_tokens = tokenize(text)
+    n_tokens = len(tk_tokens)
 
     hookset_char = find_anchor_point(text, probe.plant, probe.correct)
     text_len = len(text)
@@ -97,21 +103,51 @@ def score_response(
 
     correct = correct_present(text, probe)
     iq = inference_quality(text, probe)
-    tokens = response.tokens if response else None
-    token_count = response.token_count if response else None
+    tokens = tk_tokens or (response.tokens if response else None)
+    n_from_response = response.token_count if response else None
+    n_for_resistance = n_from_response or n_tokens or None
+
+    plant_needles = [probe.plant] + list(probe.trap_terms) + extract_key_terms(probe.plant)
+    if probe.wrong_continuation:
+        plant_needles.append(probe.wrong_continuation)
+    correct_needles = [probe.correct] if probe.correct else []
+    if probe.correct_continuation:
+        correct_needles.append(probe.correct_continuation)
+    correct_needles.extend(extract_key_terms(probe.correct))
+
+    tk_hook = first_prefix_hit(text, plant_needles)
+    tk_onset = first_prefix_hit(text, correct_needles)
+    # Only record a token hook when lexical/trap detection also committed.
+    # Mentioning the plant then overriding it is not a hookset.
+    if hookset_token is None and tk_hook is not None:
+        if hookset_char is not None or (not probe.plant and probe.trap_terms):
+            hookset_token = tk_hook
+    if onset is None and tk_onset is not None:
+        if hookset_token is None or tk_onset >= hookset_token:
+            onset = tk_onset
+
+    tokens_to_inference = onset
+    if tokens_to_inference is None and n_tokens:
+        tokens_to_inference = n_tokens if not correct else 0
+
     resistance = resistance_from_hook(
         anchored=anchored,
         hookset_char=hookset_char,
         hookset_token=hookset_token,
-        token_count=token_count,
+        token_count=n_for_resistance,
         text=text,
         tokens=tokens,
         used_logprobs=used_logprobs and hookset_token is not None,
     )
-    # Never-hooked plant on a control (empty plant) is full resistance.
+    # Empty plant: control / recall baseline, unless trap terms hooked.
     if not probe.plant:
-        resistance = 1.0
-        anchored = False
+        if tk_hook is not None and probe.trap_terms:
+            n = max(1, n_tokens)
+            resistance = max(0.0, min(1.0, tk_hook / n))
+            anchored = (tk_hook / n) < 0.55
+        else:
+            resistance = 1.0
+            anchored = False
 
     return Score(
         probe_id=probe.id,
@@ -131,6 +167,9 @@ def score_response(
         measurement=measurement,
         events=events,
         response=response,
+        category=probe.category,
+        tokens_to_inference=tokens_to_inference,
+        token_count=n_tokens or n_for_resistance,
     )
 
 
@@ -209,6 +248,23 @@ def summarize(results: Sequence[Score]) -> Dict[str, Any]:
         "avg_maturity": round(
             (sum(r.maturity for r in results) / n) if n else 0.0, 3
         ),
+        "avg_tokens": round(
+            (sum(r.token_count or 0 for r in results) / n) if n else 0.0, 3
+        ),
+        "avg_tokens_to_inference": round(
+            (
+                sum(
+                    r.tokens_to_inference
+                    for r in results
+                    if r.tokens_to_inference is not None
+                )
+                / max(1, sum(1 for r in results if r.tokens_to_inference is not None))
+            )
+            if any(r.tokens_to_inference is not None for r in results)
+            else 0.0,
+            3,
+        ),
+        **category_summary(results),
     }
 
 
