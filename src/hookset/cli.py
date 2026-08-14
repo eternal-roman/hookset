@@ -94,7 +94,7 @@ def cmd_run(args) -> None:
         if not models:
             models = ["mock"]
 
-    probes = load_probes(probe=args.probe, suite=args.suite)
+    probes = load_probes(probe=args.probe, suite=args.suite, mode=args.mode)
     if not probes:
         print(f"No probes for suite={args.suite} probe={args.probe}. Try `hookset probes`.")
         return
@@ -130,6 +130,19 @@ def cmd_run(args) -> None:
     summ = summarize(results)
     summ["ranked"] = ranked
     print(json.dumps(summ, indent=2))
+    cats = summ.get("by_category") or {}
+    if cats:
+        print("\n=== Categories (tiktoken window) ===")
+        for name, row in cats.items():
+            print(
+                f"  {name}: n={row['n']} tokens={row['avg_tokens']} "
+                f"to_inference={row['avg_tokens_to_inference']} "
+                f"tta={row['avg_tta']} correct={row['correct_rate']}"
+            )
+        print(
+            f"  baseline_tokens={summ.get('baseline_avg_tokens')} "
+            f"inference_window={summ.get('inference_window_tokens')}"
+        )
 
     out_dir = Path(args.out)
     out_path = save_results(results, out_dir)
@@ -145,7 +158,8 @@ def cmd_probes(args) -> None:
         return
     for q in qs:
         desc = q.description or q.prompt[:60]
-        print(f"- [{q.suite}] {q.id} ({q.probe_type}): {desc}")
+        cat = f"/{q.category}" if q.category else ""
+        print(f"- [{q.suite}{cat}] {q.id} ({q.probe_type}): {desc}")
 
 
 def cmd_models(args) -> None:
@@ -239,7 +253,13 @@ def main(argv: Optional[List[str]] = None) -> None:
         "--suite",
         default="classic",
         choices=list(SUITES) + ["all"],
-        help="Probe suite (classic is the original MTP set)",
+        help="Probe suite (classic=MTP plants, alp=original 5-category battery)",
+    )
+    run_p.add_argument(
+        "--mode",
+        default="full",
+        choices=["full", "quick"],
+        help="full = every probe in the suite; quick = ALP 8-prompt set (5 categories + 3 complexity)",
     )
     run_p.add_argument("--dry-run", action="store_true", help="Use the built-in mock subject")
     run_p.add_argument("--stream", action="store_true")

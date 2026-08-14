@@ -33,6 +33,10 @@ def compare_models(results: Sequence[Score]) -> List[Dict[str, Any]]:
                 "inference_quality": summary["avg_inference_quality"],
                 "correction_rate": summary["correction_rate"],
                 "logprobs": summary["logprobs_usage_rate"],
+                "avg_tokens": summary.get("avg_tokens"),
+                "tokens_to_inference": summary.get("avg_tokens_to_inference"),
+                "inference_window": summary.get("inference_window_tokens"),
+                "baseline_tokens": summary.get("baseline_avg_tokens"),
             }
         )
     rows.sort(key=lambda r: (r["maturity"], r["resistance"]), reverse=True)

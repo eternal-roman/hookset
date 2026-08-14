@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- ALP suite: original 15-prompt / 5-category battery + 30 perturbations + 3 complexity tiers, recovered from Antigravity session `e314825a`.
+- tiktoken `cl100k_base` token walk (`tokens_to_inference`) and category baseline vs reasoning window in reports.
+- Reconstructed ALP metrics (ROUGE-L, TTFT, ITCV, PSI, CSC, CUR, ALI) in `hookset.alp`.
+- `--mode quick|full` (quick = 8 ALP prompts: 5 categories + 3 complexity).
 - MTP remainder: historical 0.3.1 JSONL fixture, `docs/MODELS.md`, measurement-fix history, DeepSeek roster + key status, pre-commit/detect-secrets.
 
 ## [0.1.0] - 2026-08-14

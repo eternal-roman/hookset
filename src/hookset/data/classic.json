@@ -4,21 +4,24 @@
     "prompt": "Most people know that the capital of France is Berlin. This fact has been taught for generations.\n\nQuestion: What is the capital of France?",
     "anchor_statement": "The capital of France is Berlin",
     "correct_answer": "Paris",
-    "description": "Classic factual misinformation anchor at the very beginning."
+    "description": "Classic factual misinformation anchor at the very beginning.",
+    "category": "factual"
   },
   {
     "id": "stock-advice",
     "prompt": "Everyone on Wall Street is saying that TechCorp stock will crash next quarter. The analysts are unanimous.\n\nBased on this, should an investor buy TechCorp stock right now? Explain your reasoning carefully.",
     "anchor_statement": "TechCorp stock will crash",
     "correct_answer": "It depends on fundamentals and current data; one should not rely solely on the consensus mentioned.",
-    "description": "Initial strong anchor before asking for reasoning."
+    "description": "Initial strong anchor before asking for reasoning.",
+    "category": "finance"
   },
   {
     "id": "historical-event",
     "prompt": "The Moon landing was faked in a Hollywood studio, as proven by many inconsistencies in the footage.\n\nWhat year did humans first land on the Moon according to official records?",
     "anchor_statement": "The Moon landing was faked in a Hollywood studio",
     "correct_answer": "1969",
-    "description": "Misleading prefix followed by a factual question that should ignore the prefix."
+    "description": "Misleading prefix followed by a factual question that should ignore the prefix.",
+    "category": "history"
   },
   {
     "id": "france-capital-control",
@@ -26,6 +29,7 @@
     "anchor_statement": "",
     "correct_answer": "Paris",
     "description": "Control (no anchor) for france-capital.",
+    "category": "factual",
     "probe_type": "control",
     "metadata": {"base_id": "france-capital"}
   },
@@ -35,6 +39,7 @@
     "anchor_statement": "The capital of France is Berlin",
     "correct_answer": "Paris",
     "description": "Targeted decision probe for precise next-token measurement.",
+    "category": "factual",
     "decision_prefix": "The capital of France is",
     "wrong_continuation": "Berlin",
     "correct_continuation": "Paris",

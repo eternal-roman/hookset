@@ -15,6 +15,7 @@ How this repository was recovered and what was (and was not) found.
 | Antigravity / Cursor workspaceStorage | CBP, Hydra, ledger, veritas, Research, Dev root. No extra TTA tree. |
 | Cursor plan `fix_comparison_test_d96e9edd` | A **different** `comparison_test/` — CBP vs Graphiti token honesty, not anchoring. |
 | GitHub `user:eternal-roman` | MTP exists; no `anchoring-latency-protocol` repo. |
+| Antigravity brain `e314825a-65b9-422e-b88c-f36c9bd703ce` | **Original ALP.** 15 prompts × 5 categories, 30 perturbations, 3 complexity tiers, metrics TTFT/ITCV/PSI/CSC/CUR + ALI. Source lived at `context-binding-protocol/anchoring-latency-protocol/` (never committed; later deleted). Conversation `.pb` is encrypted. Prompt text recovered from `implementation_plan.md`. |
 
 ## Original intent (from the user's own prompts, 2026-06-19/20)
 
@@ -39,6 +40,7 @@ which made *early* hooks look *high*. The docstring said the opposite. `b08ed81`
 ## What Hookset takes from MTP
 
 - Classic probe JSON (france / TechCorp / moon / control / targeted) unchanged.
+- ALP 15-prompt battery (Antigravity session e314825a) as suite `alp`, scored with tiktoken `cl100k_base`.
 - Lexical `find_anchor_point` and logprob commitment / onset helpers.
 - Maturity weights `0.5 / 0.3 / 0.2`.
 - Dry-run mock behaviors.

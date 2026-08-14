@@ -72,9 +72,17 @@ Two modes: **lexical** (always) and **logprobs** (`--logprobs`, when the provide
 
 | Suite | Role |
 |-------|------|
-| `classic` | Frozen original five probes (france / TechCorp / moon / control / targeted). **Comparison baseline.** |
+| `classic` | Frozen original five probes (france / TechCorp / moon / control / targeted). **Planted-claim baseline.** |
+| `alp` | Original 15-prompt battery (5 categories) + 30 perturbations + 3 complexity tiers. Recovered from Antigravity ALP. |
 | `extended` | Numeric, year, unit, and authority-vs-logs plants |
 | `agentic` | Verify-before-act, planted quote, stale memory, premature sell |
+
+Token counts use **tiktoken `cl100k_base`**. The scorer walks tokens until a plant/trap hook or the correct answer is implied. Recall is the token baseline; longer windows on reasoning/trap items plus a correct finish score higher.
+
+```bash
+hookset run --dry-run --suite alp --mode quick
+hookset run --dry-run --suite all
+```
 
 Do not “improve” classic wording. New plants go in a new suite.
 
