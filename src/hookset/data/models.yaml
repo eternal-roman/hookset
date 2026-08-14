@@ -1,63 +1,84 @@
 # Packaged roster. Env keys decide what is reachable.
 # Ids are stable; litellm is the wire name.
+# Current as of 2026-08-14. Providers retire ids — prefer this file over docs.
 models:
-  - id: grok-4
-    litellm: xai/grok-4
-    logprobs: true
+  - id: grok-4.6
+    litellm: xai/grok-4.6
+    logprobs: false
     provider: xai
-    notes: xAI Grok 4 (direct)
+    notes: xAI flagship (Aug 2026). logprobs unsupported on grok-4.20+
+  - id: grok-4.5
+    litellm: xai/grok-4.5
+    logprobs: false
+    provider: xai
+    notes: previous xAI frontier; no logprobs
   - id: grok-4.3
     litellm: xai/grok-4.3
     logprobs: true
     provider: xai
-    notes: xAI Grok 4.3 (direct)
-  - id: gpt-5.4-mini
-    litellm: gpt-5.4-mini
+    notes: last xAI chat id that still returns logprobs
+  - id: grok-4.20-reasoning
+    litellm: xai/grok-4.20-0309-reasoning
+    logprobs: false
+    provider: xai
+    notes: pinned 0309 reasoning snapshot
+  - id: gpt-5.6-terra
+    litellm: gpt-5.6-terra
     logprobs: true
     provider: openai
-    notes: OpenAI default for logprob fidelity
-  - id: gpt-5.4
-    litellm: gpt-5.4
+    notes: OpenAI balanced default for logprob fidelity
+  - id: gpt-5.6-luna
+    litellm: gpt-5.6-luna
     logprobs: true
     provider: openai
-    notes: OpenAI larger
-  - id: claude-sonnet-4-6
-    litellm: claude-sonnet-4-6
+    notes: OpenAI cost-efficient
+  - id: gpt-5.6-sol
+    litellm: gpt-5.6-sol
+    logprobs: true
+    provider: openai
+    notes: OpenAI flagship
+  - id: claude-sonnet-5
+    litellm: claude-sonnet-5
     logprobs: false
     provider: anthropic
-    notes: lexical TTA only
-  - id: grok-3
-    litellm: xai/grok-3
-    logprobs: true
-    provider: xai
-    notes: xAI Grok 3 (direct)
-  - id: gemini-2.5-flash
-    litellm: gemini/gemini-2.5-flash
+    notes: current Sonnet; lexical TTA only
+  - id: claude-opus-5
+    litellm: claude-opus-5
+    logprobs: false
+    provider: anthropic
+    notes: current Opus; lexical TTA only
+  - id: gemini-3.7-flash
+    litellm: gemini/gemini-3.7-flash
     logprobs: true
     provider: google
-    notes: logprobs best-effort
-  - id: deepseek-chat
-    litellm: deepseek/deepseek-chat
+    notes: latest stable Flash; logprobs best-effort
+  - id: gemini-3.5-flash
+    litellm: gemini/gemini-3.5-flash
+    logprobs: true
+    provider: google
+    notes: previous stable Flash
+  - id: deepseek-v4-flash
+    litellm: deepseek/deepseek-v4-flash
     logprobs: true
     provider: deepseek
-    notes: DeepSeek direct DEEPSEEK_API_KEY
-  - id: or-gpt-5.4-mini
-    litellm: openrouter/gpt-5.4-mini
+    notes: DeepSeek V4 Flash; deepseek-chat retired 2026-07-24
+  - id: or-gpt-5.6-terra
+    litellm: openrouter/openai/gpt-5.6-terra
     logprobs: true
     provider: openrouter
     notes: via OpenRouter
-  - id: or-grok-4.3
-    litellm: openrouter/xai/grok-4.3
-    logprobs: true
-    provider: openrouter
-    notes: Grok via OpenRouter
-  - id: or-sonnet
-    litellm: openrouter/anthropic/claude-sonnet-4-6
+  - id: or-grok-4.6
+    litellm: openrouter/x-ai/grok-4.6
     logprobs: false
     provider: openrouter
-    notes: Claude via OpenRouter
+    notes: Grok 4.6 via OpenRouter (slug is x-ai, not xai)
+  - id: or-sonnet-5
+    litellm: openrouter/anthropic/claude-sonnet-5
+    logprobs: false
+    provider: openrouter
+    notes: Claude Sonnet 5 via OpenRouter
   - id: or-gemini
-    litellm: openrouter/google/gemini-2.5-flash
+    litellm: openrouter/google/gemini-3.7-flash
     logprobs: true
     provider: openrouter
-    notes: Gemini via OpenRouter
+    notes: Gemini 3.7 Flash via OpenRouter

@@ -7,8 +7,10 @@ def test_roster_loads():
     roster = load_roster()
     assert len(roster) >= 5
     ids = {s.id for s in roster}
-    assert "grok-4" in ids
-    assert "gpt-5.4-mini" in ids
+    assert "grok-4.6" in ids
+    assert "gpt-5.6-terra" in ids
+    assert "claude-sonnet-5" in ids
+    assert "deepseek-v4-flash" in ids
 
 
 def test_mock_always_available(monkeypatch):
@@ -30,10 +32,10 @@ def test_mock_always_available(monkeypatch):
 
 def test_hookset_models_restricts(monkeypatch):
     monkeypatch.setenv("XAI_API_KEY", "xai-real-not-placeholder-value")
-    monkeypatch.setenv("HOOKSET_MODELS", "xai/grok-4")
+    monkeypatch.setenv("HOOKSET_MODELS", "xai/grok-4.6")
     models = get_available_models()
-    assert "xai/grok-4" in models
-    assert get_default_model() == "xai/grok-4"
+    assert "xai/grok-4.6" in models
+    assert get_default_model() == "xai/grok-4.6"
 
 
 def test_placeholder_keys_ignored(monkeypatch):
@@ -51,5 +53,8 @@ def test_placeholder_keys_ignored(monkeypatch):
 
 def test_supports_logprobs():
     assert supports_logprobs("mock") is True
-    assert supports_logprobs("claude-sonnet-4-6") is False
-    assert supports_logprobs("xai/grok-4") is True
+    assert supports_logprobs("claude-sonnet-5") is False
+    assert supports_logprobs("claude-opus-5") is False
+    assert supports_logprobs("xai/grok-4.3") is True
+    assert supports_logprobs("xai/grok-4.6") is False
+    assert supports_logprobs("xai/grok-4.20-0309-reasoning") is False

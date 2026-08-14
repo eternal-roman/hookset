@@ -1,11 +1,13 @@
 # Copy entries into .env as HOOKSET_MODELS=...
-# or pass --models xai/grok-4,gpt-5.4-mini
+# or pass --models xai/grok-4.6,gpt-5.6-terra
 #
 # The packaged roster lives in src/hookset/data/models.yaml.
-# This file is a reminder of a useful bench set:
+# This file is a reminder of a useful bench set (August 2026 ids):
 
-# xai/grok-4
+# xai/grok-4.6
+# xai/grok-4.5
 # xai/grok-4.3
-# gpt-5.4-mini
-# claude-sonnet-4-6
-# gemini/gemini-2.5-flash
+# gpt-5.6-terra
+# claude-sonnet-5
+# gemini/gemini-3.7-flash
+# deepseek/deepseek-v4-flash

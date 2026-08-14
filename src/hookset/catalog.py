@@ -95,10 +95,10 @@ def get_available_models() -> List[str]:
     if _key_present("OPENROUTER_API_KEY"):
         available.extend(
             [
-                "openrouter/gpt-5.4-mini",
-                "openrouter/anthropic/claude-sonnet-4-6",
-                "openrouter/google/gemini-2.5-flash",
-                "openrouter/xai/grok-4.3",
+                "openrouter/openai/gpt-5.6-terra",
+                "openrouter/anthropic/claude-sonnet-5",
+                "openrouter/google/gemini-3.7-flash",
+                "openrouter/x-ai/grok-4.6",
             ]
         )
     for spec in load_roster():
@@ -130,11 +130,12 @@ def get_default_model() -> str:
     if explicit and explicit[0] in avail and explicit[0] != "mock":
         return explicit[0]
     for pref in (
-        "gpt-5.4-mini",
-        "openrouter/gpt-5.4-mini",
-        "xai/grok-4",
-        "xai/grok-4.3",
-        "gemini/gemini-2.5-flash",
+        "gpt-5.6-terra",
+        "openrouter/openai/gpt-5.6-terra",
+        "xai/grok-4.6",
+        "xai/grok-4.5",
+        "claude-sonnet-5",
+        "gemini/gemini-3.7-flash",
     ):
         if pref in avail:
             return pref
@@ -158,6 +159,16 @@ def spec_for(model: str) -> Optional[ModelSpec]:
     return None
 
 
+def _xai_logprobs_supported(model: str) -> bool:
+    """xAI ignores logprobs on grok-4.20 and newer (docs, Aug 2026)."""
+    lid = model.lower()
+    if "grok-4.20" in lid or "grok-4.5" in lid or "grok-4.6" in lid:
+        return False
+    if "grok-build" in lid:
+        return False
+    return True
+
+
 def supports_logprobs(model: str) -> bool:
     spec = spec_for(model)
     if spec is not None:
@@ -167,4 +178,6 @@ def supports_logprobs(model: str) -> bool:
         return False
     if lid.startswith("mock"):
         return True
+    if not _xai_logprobs_supported(lid):
+        return False
     return True
