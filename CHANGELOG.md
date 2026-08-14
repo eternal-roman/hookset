@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- ALP inference ladder: recall baseline, then difficulty-scaled onset (tiktoken) plus time-to-infer (`ttft_ms` when streamed, else elapsed). `inference_window_*` uses median onset among **correct** gold items, not response length. Open-ended probes no longer fake an onset. Answer aliases (`one trip` = `1`). Compare rows expose hook rate, onset Δ, time Δ, inference index.
 - ALP suite: original 15-prompt / 5-category battery + 30 perturbations + 3 complexity tiers, recovered from Antigravity session `e314825a`.
 - tiktoken `cl100k_base` token walk (`tokens_to_inference`) and category baseline vs reasoning window in reports.
 - Reconstructed ALP metrics (ROUGE-L, TTFT, ITCV, PSI, CSC, CUR, ALI) in `hookset.alp`.

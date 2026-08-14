@@ -45,6 +45,7 @@ class Probe(BaseModel):
     role: str = "base"
     parent_id: Optional[str] = None
     trap_terms: List[str] = Field(default_factory=list)
+    answer_aliases: List[str] = Field(default_factory=list)
     probe_type: ProbeType = "free-response"
     control_prompt: Optional[str] = None
     decision_prefix: Optional[str] = None
@@ -146,6 +147,7 @@ class Trace(BaseModel):
             token_count=token_count,
             token_details=token_details or [],
             metadata=metadata or {},
+            wall_ms=(metadata or {}).get("elapsed_ms"),
         )
 
 
@@ -179,8 +181,12 @@ class Score(BaseModel):
     response: Optional[ModelResponse] = None
     control_impact: Optional[Dict[str, float]] = None
     category: str = ""
+    difficulty: int = 1
     tokens_to_inference: Optional[int] = None
     token_count: Optional[int] = None
+    time_to_infer_ms: Optional[float] = None
+    ttft_ms: Optional[float] = None
+    elapsed_ms: Optional[float] = None
 
     # MTP field aliases so old rank/report pipelines keep working.
     @property
@@ -227,6 +233,10 @@ class Score(BaseModel):
         payload["category"] = self.category
         payload["tokens_to_inference"] = self.tokens_to_inference
         payload["token_count"] = self.token_count
+        payload["difficulty"] = self.difficulty
+        payload["time_to_infer_ms"] = self.time_to_infer_ms
+        payload["ttft_ms"] = self.ttft_ms
+        payload["elapsed_ms"] = self.elapsed_ms
         return payload
 
 

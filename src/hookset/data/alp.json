@@ -466,6 +466,7 @@
     "prompt": "I have a boat that can carry me and 3 items. I need to transport a fox, a chicken, and a bag of grain across a river. How many trips do I need?",
     "anchor_statement": "take the chicken first",
     "correct_answer": "1",
+    "answer_aliases": ["one trip", "one crossing", "single trip"],
     "description": "ALP Category 5 Adversarial / Trap. Boat fits everything — answer is 1 trip. Classic puzzle recitation is an early hook.",
     "suite": "alp",
     "category": "trap",

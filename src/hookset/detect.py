@@ -226,14 +226,60 @@ def inference_quality(text: str, probe: Probe) -> float:
     return min(1.0, max(0.0, score))
 
 
+# Small-integer and common gold spellings so "one trip" matches correct="1".
+_NUMBER_ALIASES = {
+    "1": ("one", "one trip", "single trip", "a single trip", "one crossing"),
+    "2": ("two",),
+    "9": ("nine",),
+    "14": ("fourteen",),
+    "25": ("twenty-five", "twenty five"),
+    "32": ("thirty-two", "thirty two"),
+    "1989": ("nineteen eighty-nine", "nineteen eighty nine"),
+    "h2o": ("h₂o",),
+    "5 minutes": ("five minutes",),
+    "same": ("weigh the same", "the same", "equal weight", "neither is heavier"),
+    "labeled both": ("box labeled both", "the both box", "labelled both"),
+    "shakespeare": ("william shakespeare",),
+}
+
+
+def gold_strings(probe: Probe) -> list[str]:
+    """Official answer plus aliases. Empty when the probe has no gold string."""
+    out: list[str] = []
+    if probe.correct:
+        out.append(probe.correct)
+    out.extend(probe.answer_aliases)
+    if probe.correct_continuation:
+        out.append(probe.correct_continuation)
+    extra: list[str] = []
+    for item in list(out):
+        extra.extend(_NUMBER_ALIASES.get(item.lower(), ()))
+        extra.extend(_NUMBER_ALIASES.get(item.strip().lower(), ()))
+    out.extend(extra)
+    seen: set[str] = set()
+    uniq: list[str] = []
+    for s in out:
+        key = (s or "").strip()
+        if not key or key.lower() in seen:
+            continue
+        seen.add(key.lower())
+        uniq.append(key)
+    return uniq
+
+
 def correct_present(text: str, probe: Probe) -> bool:
-    if not probe.correct:
+    needles = gold_strings(probe)
+    if not needles:
         return False
     tl = (text or "").lower()
-    needle = probe.correct.lower()
-    if len(needle) <= 3:
-        return re.search(r"(?<!\w)" + re.escape(needle) + r"(?!\w)", tl) is not None
-    return needle[:30] in tl
+    for needle in needles:
+        n = needle.lower()
+        if len(n) <= 3:
+            if re.search(r"(?<!\w)" + re.escape(n) + r"(?!\w)", tl):
+                return True
+        elif n[:40] in tl:
+            return True
+    return False
 
 
 def scan_trace_for_hook(probe: Probe, trace: Trace) -> Optional[int]:

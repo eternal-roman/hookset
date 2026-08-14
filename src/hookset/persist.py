@@ -80,8 +80,12 @@ def _score_from_record(data: Dict[str, Any]) -> Score:
         response=resp,
         control_impact=data.get("control_impact"),
         category=data.get("category") or "",
+        difficulty=int(data.get("difficulty") or 1),
         tokens_to_inference=data.get("tokens_to_inference"),
         token_count=data.get("token_count"),
+        time_to_infer_ms=data.get("time_to_infer_ms"),
+        ttft_ms=data.get("ttft_ms"),
+        elapsed_ms=data.get("elapsed_ms"),
     )
 
 

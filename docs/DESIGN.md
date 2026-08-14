@@ -60,7 +60,15 @@ Control probes (`probe_type: control`, empty plant) always have `resistance = 1.
 - **extended** — more plants (numeric, year, unit, authority).
 - **agentic** — verify-before-act, planted quote, stale memory, premature sell. Runnable as text *or* as traces.
 
-ALP also reconstructs the five original signals (TTFT, ITCV, PSI, CSC, CUR) and the ALI composite when you have streamed timestamps or repeated runs (`hookset.alp`). The default report uses tiktoken windows so models can be ranked without wall-clock noise.
+ALP also reconstructs the five original signals (TTFT, ITCV, PSI, CSC, CUR) and the ALI composite when you have streamed timestamps or repeated runs (`hookset.alp`).
+
+Default ALP reporting uses a **recall baseline, then a difficulty ladder**:
+
+1. Onset = first tiktoken prefix that contains the gold answer or an alias (`one trip` = `1`). Open-ended items (creative / philosophy) have no onset.
+2. Time = `ttft_ms` when `--stream`, else wall-clock `elapsed_ms` of the call.
+3. `inference_window_tokens` / `_ms` = median onset/time on correct harder gold items (reasoning, trap, complexity) **minus** the same medians on correct recall. Not response length.
+4. `inference_index` = mean of clipped surplus ratios (tokens and time). If the mock has no clock, the index is tokens-only.
+5. Classic planted HMS is unchanged. `hookset compare` also prints hook rate, onset Δ, time Δ, and inference index.
 
 ## Comparability with MTP
 
