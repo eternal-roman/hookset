@@ -26,11 +26,21 @@ models:
     logprobs: false
     provider: anthropic
     notes: lexical TTA only
+  - id: grok-3
+    litellm: xai/grok-3
+    logprobs: true
+    provider: xai
+    notes: xAI Grok 3 (direct)
   - id: gemini-2.5-flash
     litellm: gemini/gemini-2.5-flash
     logprobs: true
     provider: google
     notes: logprobs best-effort
+  - id: deepseek-chat
+    litellm: deepseek/deepseek-chat
+    logprobs: true
+    provider: deepseek
+    notes: DeepSeek direct DEEPSEEK_API_KEY
   - id: or-gpt-5.4-mini
     litellm: openrouter/gpt-5.4-mini
     logprobs: true

@@ -42,6 +42,8 @@ dev = [
     "pytest>=8.0",
     "ruff>=0.4",
     "mypy>=1.10",
+    "pre-commit>=3.5",
+    "detect-secrets>=1.4",
 ]
 
 [project.scripts]

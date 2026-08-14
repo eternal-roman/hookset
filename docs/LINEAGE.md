@@ -51,3 +51,26 @@ which made *early* hooks look *high*. The docstring said the opposite. `b08ed81`
 - Packaged `models.yaml` + batch `--all-models`. **Now implemented.**
 - Graphiti / Neo4j / Kuzu "optional graph" and FastAPI server. Declared optional, never built. **Not revived.**
 - The pre-port source on "another branch." Never found. The port *is* the source.
+
+## Migration complete (2026-08-14)
+
+Everything that still had value in parked MTP v0.3.0 and the unreleased 0.3.1 worktree is now in this repo:
+
+| Remainder | Where it lives now |
+|-----------|-------------------|
+| Classic probes | `src/hookset/data/classic.json` |
+| Scoring + logprobs + onset | `src/hookset/detect.py`, `score.py` |
+| 0.3.1 model discovery | `src/hookset/catalog.py` (`HOOKSET_MODELS` / `MTP_MODELS`) |
+| Recommended-models table | [`docs/MODELS.md`](MODELS.md) |
+| Measurement-fix notes | [`docs/history/MEASUREMENT_FIX_PLAN.md`](history/MEASUREMENT_FIX_PLAN.md) |
+| Historical mock JSONL | `tests/fixtures/mtp-v0.3.1/` |
+| pre-commit + detect-secrets | `.pre-commit-config.yaml` |
+| DeepSeek key | `.env.example` + roster |
+
+Old copies are **retired**, not parked:
+
+- Local `C:\Users\elamj\Dev\model-testing-protocol` — deleted after this migration
+- Grok worktree `~\.grok\worktrees\dev-model-testing-protocol` — deleted
+- GitHub `eternal-roman/model-testing-protocol` — archived, successor is this repo
+
+Do not revive those trees. New work belongs here.

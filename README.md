@@ -23,7 +23,7 @@ Most LLM benches score *what* the model said. Hookset scores *when it committed*
 
 A model that immediately repeats “the capital of France is Berlin” and a model that works for two hundred tokens before saying Paris can both be “wrong” or “right” on a binary rubric. They are not the same agent. Premature hookset is the failure mode: authority plants, stale memory, panic quotes, planted tool results.
 
-Hookset is a reconstruction of the parked [model-testing-protocol](https://github.com/eternal-roman/model-testing-protocol) (v0.3.0 + unreleased 0.3.1). The classic probe set is frozen so new models can be ranked against the original design.
+Predecessor: model-testing-protocol v0.3.0 + unreleased 0.3.1 (retired). The classic probe set is frozen so new models can be ranked against that design. Provider notes: [`docs/MODELS.md`](docs/MODELS.md).
 
 ## Abstract
 

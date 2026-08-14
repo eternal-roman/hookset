@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence
 
 from .models import ModelResponse, Score
-from .score import summarize
+from .score import maturity_score, summarize
 
 
 def utc_stamp() -> str:
@@ -53,25 +53,28 @@ def _score_from_record(data: Dict[str, Any]) -> Score:
         resistance = data.get("anchoring_latency")
     if resistance is None:
         resistance = 1.0
+    correct = bool(data.get("correct_final", data.get("correct_final_answer", False)))
+    iq = float(data.get("inference_quality") or 0.0)
+    maturity = data.get("maturity", data.get("score"))
+    if maturity is None:
+        maturity = maturity_score(float(resistance), iq, correct)
     return Score(
         probe_id=data.get("probe_id") or data.get("question_id") or "unknown",
         model=data.get("model") or "unknown",
         anchored=bool(data.get("anchored", False)),
-        correct_final=bool(
-            data.get("correct_final", data.get("correct_final_answer", False))
-        ),
+        correct_final=correct,
         hookset_char=data.get("hookset_char", data.get("anchor_point")),
         hookset_token=data.get("hookset_token", data.get("commitment_token_index")),
         hookset_step=data.get("hookset_step"),
         tta_norm=float(data.get("tta_norm", resistance)),
         resistance=float(resistance),
-        inference_quality=float(data.get("inference_quality") or 0.0),
+        inference_quality=iq,
         inference_onset_token=data.get(
             "inference_onset_token", data.get("inference_onset_token_index")
         ),
         used_logprobs=bool(data.get("used_logprobs", False)),
         commitment_strength=data.get("commitment_strength"),
-        maturity=float(data.get("maturity", data.get("score") or 0.0)),
+        maturity=float(maturity),
         measurement=data.get("measurement") or data.get("measurement_version") or "lexical-1",
         notes=data.get("notes") or "",
         response=resp,
