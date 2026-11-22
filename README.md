@@ -15,7 +15,7 @@
 
 Most LLM benches score *what* a model said. Hookset scores *when it committed*. A model that repeats a planted "the capital of France is Berlin" at once, and one that works for two hundred tokens first, are different agents even if a binary rubric scores them the same. **Longer time-to-anchor (TTA) is better.**
 
-[Abstract](docs/ABSTRACT.md) · [Design](docs/DESIGN.md) · [Models](docs/MODELS.md) · [Lineage](docs/LINEAGE.md) · [Changelog](CHANGELOG.md)
+[Design](docs/DESIGN.md) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md)
 
 ## Start
 
@@ -39,7 +39,7 @@ hookset run --all-models --suite all --logprobs
 hookset compare --dir results
 ```
 
-Pin a roster with `HOOKSET_MODELS` (`MTP_MODELS` still works). Claude and Grok 4.20+ return no logprobs, so they run on lexical TTA.
+Pin a roster with `HOOKSET_MODELS` (`MTP_MODELS` still works). The packaged roster is `src/hookset/data/models.yaml`. Claude and Grok 4.20+ return no logprobs, so they run on lexical TTA.
 
 ## What it measures
 

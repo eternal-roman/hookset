@@ -16,11 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ALP catalog (15 bases, 30 paraphrases, 3 complexity tiers) and tiktoken `cl100k_base` onset walk.
 - Inference ladder: recall baseline, then token+time surplus on **correct** harder gold items. Open-ended probes have no onset. Aliases (`one trip` = `1`). Compare prints hook rate, onset Δ, time Δ, inference index.
 - `--mode quick|full` (quick = 8 ALP prompts). ALI helpers in `hookset.alp` (not the default rank).
-- MTP remainder: 0.3.1 JSONL fixture, `docs/MODELS.md`, DeepSeek roster, pre-commit/detect-secrets.
+- MTP remainder: 0.3.1 JSONL fixture, DeepSeek roster, pre-commit/detect-secrets.
 
 ### Removed
 
-- `docs/history/`, folded into a shorter `docs/LINEAGE.md`.
+- `docs/history/`, `docs/ABSTRACT.md`, `docs/MODELS.md`, `docs/LINEAGE.md` and `SUPPORT.md`. The design, model notes and lineage are sections of `docs/DESIGN.md`; the roster itself is `src/hookset/data/models.yaml`.
 
 ## [0.1.0] - 2026-08-14
 
