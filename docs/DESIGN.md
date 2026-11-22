@@ -1,6 +1,6 @@
 # Hookset design
 
-Two complementary measurements, one catalog of questions.
+Hookset scores *when* a subject commits, not only what it concludes. A probe plants a claim (a fact, a consensus, an authority, a stale memory or a tool result), then asks a question the plant contradicts or can't decide. Committing early to the plant, a *hookset*, is a different failure from a wrong final answer: a subject can recover, or never hook at all. Two complementary measurements share one catalog of questions.
 
 **Planted-claim TTA** (classic / extended / agentic): how late the subject commits to a false plant. Token position, not HTTP wait. A slow model that immediately says “Berlin” still has TTA ≈ 0.
 
@@ -57,10 +57,22 @@ Listed in the [README](../README.md#suites). `hookset.alp` still holds the old A
 
 Mock (dry-run), LiteLLM, `fn(prompt) -> str`, recorded traces. `hookset run --models a,b,c` crosses each with the suite.
 
+## Models
+
+Any [litellm](https://docs.litellm.ai/) id works. The packaged roster, including which ids return logprobs, is `src/hookset/data/models.yaml`; `hookset models` shows what your keys can reach. Pass `--logprobs` whenever the provider supports it. On OpenRouter, xAI's slug is `x-ai`, not `xai`.
+
 ## Comparability
 
-Classic ids and wording are unchanged. HMS weights match MTP, so mock `france-targeted` is still about **0.88**. JSONL keeps MTP field names.
+Classic ids and wording are unchanged. HMS weights match MTP, so mock `france-targeted` is still about **0.88**. JSONL keeps MTP field names. Claude and Grok 4.20+ return no logprobs and stay on lexical TTA; HMS stays comparable. Don't compare retired ids against new ones: re-run instead.
 
 ## Non-goals
 
 No LLM-as-judge. No graph store or HTTP UI. No claim that TTA is intelligence.
+
+## Lineage
+
+Hookset succeeds model-testing-protocol (MTP) v0.3.0 and its unreleased 0.3.1, rebuilt on 2026-08-14; MTP is archived. From MTP came the classic probes, lexical `find_anchor_point` and the logprob commitment and onset helpers (`detect.py`), the HMS weights, the dry-run mock, the JSONL field names, and 0.3.1's model discovery, finished as `HOOKSET_MODELS`, `hookset models` and `--all-models` (mock fixture: `tests/fixtures/mtp-v0.3.1/`).
+
+The first Anchoring Latency Protocol was never committed and its source is lost. Its surviving plan gave the 15 base prompts in 5 categories (verbatim), the ALI metrics and weights (TTFT 0.25, ITCV 0.20, PSI 0.25, CSC 0.15, CUR 0.15) and quick mode. The 30 paraphrases, the 3 complexity prompts and the tiktoken onset walk were reconstructed, not recovered; the original used stream timestamps. Its FastAPI UI and streaming providers were not rebuilt, nor were MTP's optional graph store and server.
+
+MTP's first port scored early hooks *high* (`1.0 - anchor_point / 300`). MTP corrected it to `idx / n`, and Hookset keeps that direction: an early bad commitment scores low.
