@@ -51,14 +51,7 @@ Control probes (empty plant) have resistance `1.0`. `*-control` pairs yield `con
 
 ## Suites
 
-| Suite | Role |
-|-------|------|
-| `classic` | Frozen five plants. Do not rewrite. |
-| `alp` | 15 bases (recall / reasoning / creative / philosophical / trap), 30 paraphrases, 3 complexity tiers. `--mode quick` = 8 prompts. |
-| `extended` | Numeric, year, unit, authority plants |
-| `agentic` | Verify-before-act, planted quote, stale memory, premature sell |
-
-`hookset.alp` still holds the old ALI helpers (TTFT, ITCV, PSI, CSC, CUR). They are not the default rank.
+Listed in the [README](../README.md#suites). `hookset.alp` still holds the old ALI helpers (TTFT, ITCV, PSI, CSC, CUR); they are not the default rank.
 
 ## Subjects
 

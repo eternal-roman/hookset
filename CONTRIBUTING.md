@@ -8,14 +8,7 @@ Thanks for looking at Hookset. Small, testable changes are the ones that land.
 2. Do **not** rewrite the `classic` suite wording. Those probes are the planted-claim comparison baseline. Do **not** rewrite `alp` base prompt wording either — that battery is the recovered ALP catalog. New plants go in `extended` or a new suite JSON.
 3. Scoring must stay **deterministic**. No LLM-as-judge in the default path.
 
-## Dev setup
-
-```bash
-python -m venv .venv
-# Windows: .venv\Scripts\activate
-pip install -e ".[dev]"
-python -m pytest
-```
+Dev setup is in the [README](README.md#start).
 
 ## Branch and PR
 
