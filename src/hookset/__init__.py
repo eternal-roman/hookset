@@ -1,6 +1,6 @@
 """Hookset — time-to-anchor as a measure of model and agent maturity."""
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 from .adapters import CallableAdapter, LiteLLMAdapter, MockAdapter, TraceAdapter, make_adapter
 from .alp import category_summary, compute_ali
